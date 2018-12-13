@@ -1,5 +1,6 @@
 package com.glovo.challenge.data.cities
 
+import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -10,6 +11,6 @@ internal interface CitiesAPI {
     fun list(): Single<List<CityDTO>>
 
     @GET("cities/{cityCode}")
-    fun getDetails(@Path("cityCode") cityCode: String): Single<List<CityDTO>>
+    fun getDetails(@Path("cityCode") cityCode: String): Maybe<CityDTO>
 
 }

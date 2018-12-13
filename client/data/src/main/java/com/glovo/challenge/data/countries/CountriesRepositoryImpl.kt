@@ -7,7 +7,8 @@ internal class CountriesRepositoryImpl @Inject constructor(
     private val api: CountriesAPI
 ) : CountriesRepository {
 
-    override fun list() = api.list()
+    override fun list() = api
+        .list()
         .map { it.map(::buildModel) }!!
 
     private fun buildModel(dto: CountryDTO) = Country(
