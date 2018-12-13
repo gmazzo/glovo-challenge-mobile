@@ -14,7 +14,8 @@ android {
 }
 
 dependencies {
+    api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 }
