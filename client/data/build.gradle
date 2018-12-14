@@ -16,6 +16,7 @@ android {
 dependencies {
     api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
+    implementation "com.google.android.gms:play-services-location:$gmsVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 }
