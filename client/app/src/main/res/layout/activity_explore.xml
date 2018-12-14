@@ -9,16 +9,18 @@
         android:id="@+id/mapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/city_details_peek_height"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         app:cameraTargetLat="41.390205"
         app:cameraTargetLng="2.154007"
         app:cameraZoom="12" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/bottomSheet"
+        android:id="@+id/cityDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:behavior_peekHeight="?actionBarSize"
+        android:minHeight="@dimen/city_details_peek_height"
+        app:behavior_peekHeight="@dimen/city_details_peek_height"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -4,7 +4,7 @@ import android.location.Location
 import androidx.annotation.VisibleForTesting
 import com.glovo.challenge.data.cities.CitiesRepository
 import com.glovo.challenge.data.location.LocationService
-import com.glovo.challenge.data.models.City
+import com.glovo.challenge.models.InitialData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
 import io.reactivex.functions.BiFunction
@@ -25,20 +25,17 @@ internal class SplashPresenter @Inject constructor(
         listCitiesDisposable = citiesRepository.listCities()
             .zipWith(
                 locationService.getCurrentLocation().toSingle(MissingLocation()),
-                BiFunction(::packInitialData)
+                BiFunction(::InitialData)
             )
+            .map { if (it.location is MissingLocation) it.copy(location = null) else it }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { (cities, location) ->
-                view.onReady(cities, location)
-            }
+            .subscribe(view::onReady)
     }
-
-    private fun packInitialData(cities: List<City>, location: Location) =
-        cities to location.takeIf { it !is MissingLocation }
 
     override fun onStop() {
         listCitiesDisposable.dispose()
     }
 
     private class MissingLocation : Location("missing")
+
 }

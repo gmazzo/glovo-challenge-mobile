@@ -41,6 +41,9 @@ class CitiesRepositoryImplTest : BaseTest() {
         val dtos = listOf(DTO_SCL, DTO_BUE, DTO_BCN)
         val expected = listOf(CITY_SCL, CITY_BUE, CITY_BCN)
 
+        val aaa = listOf(DTO_SCL, DTO_BUE, DTO_BCN).map { it.workingArea }
+        val bbb = aaa.map { geoService.decodePolygons(it) }
+
         `when`(api.list()).thenReturn(Single.just(dtos))
 
         val result = impl.listCities().blockingGet()
@@ -56,6 +59,21 @@ class CitiesRepositoryImplTest : BaseTest() {
     @Test
     fun testGetDetails_BUE() {
         testGetDetails(DTO_BUE.code, DTO_BUE, CITY_BUE)
+    }
+
+    @Test
+    fun testGetDetails_WithBlanksWorkingAreas() {
+        testGetDetails(
+            DTO_BCN.code,
+            DTO_BCN.copy(
+                workingArea = DTO_BCN.workingArea.toMutableList().apply {
+                    add(0, "")
+                    add(2, "   ")
+                    add(size, "")
+                }
+            ),
+            CITY_BCN // blanks should be stripped out
+        )
     }
 
     @Test
@@ -84,7 +102,14 @@ class CitiesRepositoryImplTest : BaseTest() {
             busy = null,
             languageCode = null
         )
-        private val DTO_BUE = DTO_SCL.copy(code = "BUE", name = "Buenos Aires", countryCode = "AR")
+
+        private val DTO_BUE = DTO_SCL.copy(
+            code = "BUE",
+            name = "Buenos Aires",
+            countryCode = "AR",
+            workingArea = listOf("wa1")
+        )
+
         private val DTO_BCN = DTO_SCL.copy(
             code = "BCN",
             name = "Barcelona",
@@ -109,7 +134,7 @@ class CitiesRepositoryImplTest : BaseTest() {
                 code = DTO_BUE.code,
                 name = DTO_BUE.name,
                 country = COUNTRY_AR,
-                workingArea = listOf(listOf(LatLng(2.0, -2.0)))
+                workingArea = listOf(listOf(LatLng(2.0, -2.0), LatLng(4.0, -4.0)))
             )
 
         private val CITY_BCN =

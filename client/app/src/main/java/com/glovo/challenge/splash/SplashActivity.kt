@@ -1,10 +1,9 @@
 package com.glovo.challenge.splash
 
-import android.location.Location
 import android.os.Bundle
-import com.glovo.challenge.MainActivity
 import com.glovo.challenge.R
-import com.glovo.challenge.data.models.City
+import com.glovo.challenge.cities.ExploreActivity
+import com.glovo.challenge.models.InitialData
 import dagger.android.DaggerActivity
 import javax.inject.Inject
 
@@ -22,11 +21,13 @@ class SplashActivity : DaggerActivity(), SplashContract.View {
     override fun onStart() {
         super.onStart()
 
+        // TODO ask for permissions
+        
         presenter.onStart()
     }
 
-    override fun onReady(cities: List<City>, location: Location?) {
-        val intent = MainActivity.makeIntent(this, cities.toTypedArray(), location)
+    override fun onReady(initialData: InitialData) {
+        val intent = ExploreActivity.makeIntent(this, initialData)
 
         startActivity(intent)
         finish()

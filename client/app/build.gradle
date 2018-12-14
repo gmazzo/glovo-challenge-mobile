@@ -3,6 +3,8 @@ apply from: '../shared.gradle'
 
 android {
     defaultConfig {
+        minSdkVersion 17
+
         buildConfigField 'String', 'API_ENDPOINT', '"http://api.glovo.com/"'
     }
 
@@ -20,6 +22,7 @@ dependencies {
     implementation "androidx.cardview:cardview:$androidXVersion"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidXVersion"
+    implementation "androidx.core:core-ktx:$androidXVersion"
     implementation "androidx.recyclerview:recyclerview:$androidXVersion"
     implementation "com.google.android.material:material:$androidXVersion"
     implementation "com.google.android.gms:play-services-maps:$gmsVersion"

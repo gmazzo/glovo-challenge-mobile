@@ -37,7 +37,9 @@ internal class CitiesRepositoryImpl @Inject constructor(
         code = dto.code,
         name = dto.name,
         country = countries[dto.countryCode]!!,
-        workingArea = geoService.decodePolygons(dto.workingArea)
+        currency = dto.currency,
+        timeZone = dto.timeZone,
+        workingArea = geoService.decodePolygons(dto.workingArea.filter(CharSequence::isNotBlank))
     )
 
 }

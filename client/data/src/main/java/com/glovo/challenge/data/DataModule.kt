@@ -12,6 +12,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,7 +34,20 @@ internal class DataModule {
 
     @Provides
     @Reusable
-    fun provideRetrofit(@Endpoint endpoint: String, gson: Gson): Retrofit = Retrofit.Builder()
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+        .apply {
+            if (BuildConfig.DEBUG) {
+                addInterceptor(HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                })
+            }
+        }
+        .build()
+
+    @Provides
+    @Reusable
+    fun provideRetrofit(@Endpoint endpoint: String, client: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
+        .client(client)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
         .baseUrl(endpoint)
