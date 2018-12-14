@@ -5,16 +5,17 @@ import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 
-@Module(includes = [CitiesModule.Companion::class])
-internal interface CitiesModule {
+@Module
+internal abstract class CitiesModule {
 
     @Binds
-    fun bindRepository(impl: CitiesRepositoryImpl): CitiesRepository
+    abstract fun bindRepository(impl: CitiesRepositoryImpl): CitiesRepository
 
     @Module
     companion object {
 
         @Provides
+        @JvmStatic
         fun provideAPI(retrofit: Retrofit): CitiesAPI =
             retrofit.create(CitiesAPI::class.java)
 

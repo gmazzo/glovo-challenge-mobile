@@ -1,5 +1,6 @@
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'jacoco-android'
 
 android {
     compileSdkVersion 28
@@ -9,9 +10,9 @@ android {
         targetSdkVersion 28
 
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -26,6 +27,10 @@ android {
             includeAndroidResources = true
         }
     }
+}
+
+jacoco {
+    toolVersion = '0.8.2'
 }
 
 dependencies {

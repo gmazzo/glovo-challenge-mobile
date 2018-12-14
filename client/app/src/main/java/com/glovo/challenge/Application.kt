@@ -10,6 +10,6 @@ class Application : DaggerApplication() {
             DaggerDataComponent.builder()
                 .build()
         )
-        .build()!!
+        .create(this)!!
 
 }
