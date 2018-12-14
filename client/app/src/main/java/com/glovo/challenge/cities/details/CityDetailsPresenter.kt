@@ -1,6 +1,6 @@
 package com.glovo.challenge.cities.details
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.glovo.challenge.data.cities.CitiesRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
