@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,22 +15,10 @@
         app:cameraZoom="12" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
-        app:contentPadding="10dp"
-        app:behavior_peekHeight="100dp"
-        app:behavior_fitToContents="false"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:gravity="center"
-            android:text="Sample Info Content"
-            tools:ignore="HardcodedText" />
-
-    </androidx.cardview.widget.CardView>
+        app:behavior_peekHeight="?actionBarSize"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

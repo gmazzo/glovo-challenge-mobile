@@ -2,8 +2,7 @@ package com.glovo.challenge.cities.details
 
 import com.glovo.challenge.BaseTest
 import com.glovo.challenge.data.cities.CitiesRepository
-import com.glovo.challenge.data.models.City
-import com.glovo.challenge.data.models.Country
+import com.glovo.challenge.testCity
 import io.reactivex.Maybe
 import io.reactivex.disposables.Disposable
 import org.junit.Test
@@ -26,7 +25,7 @@ class CityDetailsPresenterTest : BaseTest() {
 
     @Test
     fun testOnStart() {
-        val city = City(code = "aCode", name = "aName", country = Country("aCode", "aName"), workingArea = emptyList())
+        val city = testCity.copy(code = "city1")
 
         `when`(citiesRepository.getCityDetails("TODO")).thenReturn(Maybe.just(city))
 
@@ -37,7 +36,7 @@ class CityDetailsPresenterTest : BaseTest() {
 
     @Test
     fun testOnStop() {
-        presenter.getDetailsDisposable = disposable
+        presenter.getCityDetailsDisposable = disposable
         presenter.onStop()
 
         verify(disposable).dispose()

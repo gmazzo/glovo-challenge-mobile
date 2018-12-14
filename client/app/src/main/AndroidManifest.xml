@@ -10,18 +10,24 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
+        android:allowBackup="false"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <!-- TODO replace here with your own API_KEY, Google Maps won't work otherwise -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBsw_Nhp-PVOPAf2KnFP0lbWtROWgOmBQA" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".splash.SplashActivity"
+            android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity" />
 
     </application>
 

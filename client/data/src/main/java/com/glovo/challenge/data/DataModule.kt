@@ -30,10 +30,10 @@ internal class DataModule {
 
     @Provides
     @Reusable
-    fun provideRetrofit(gson: Gson): Retrofit = Retrofit.Builder()
+    fun provideRetrofit(@Endpoint endpoint: String, gson: Gson): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create(gson))
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .baseUrl(BuildConfig.API_ENDPOINT)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+        .baseUrl(endpoint)
         .build()
 
     @Module

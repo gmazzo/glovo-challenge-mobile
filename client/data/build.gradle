@@ -1,18 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: '../shared.gradle'
 
-android {
-    defaultConfig {
-        buildConfigField 'String', 'API_ENDPOINT', '"http://api.glovo.com/"'
-    }
-
-    buildTypes {
-        debug {
-            buildConfigField 'String', 'API_ENDPOINT', '"http://localhost:3000/api/"'
-        }
-    }
-}
-
 dependencies {
     api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 

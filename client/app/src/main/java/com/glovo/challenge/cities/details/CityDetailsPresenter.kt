@@ -12,17 +12,18 @@ internal class CityDetailsPresenter @Inject constructor(
 ) : CityDetailsContract.Presenter {
 
     @VisibleForTesting
-    internal var getDetailsDisposable = Disposables.disposed()
+    internal var getCityDetailsDisposable = Disposables.disposed()
 
     override fun onStart() {
-        getDetailsDisposable.dispose()
-        getDetailsDisposable = citiesRepository.getCityDetails("TODO")
+        getCityDetailsDisposable.dispose()
+
+        getCityDetailsDisposable = citiesRepository.getCityDetails("TODO")
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(view::showDetails)
     }
 
     override fun onStop() {
-        getDetailsDisposable.dispose()
+        getCityDetailsDisposable.dispose()
     }
 
 }
