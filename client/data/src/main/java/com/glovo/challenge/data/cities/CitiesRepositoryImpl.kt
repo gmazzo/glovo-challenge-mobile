@@ -12,7 +12,7 @@ internal class CitiesRepositoryImpl @Inject constructor(
 ) : CitiesRepository {
 
     private val countriesByCode = countriesRepository
-        .list()
+        .listCountries()
         .map {
             it.map { country ->
                 country.code to country
@@ -20,11 +20,11 @@ internal class CitiesRepositoryImpl @Inject constructor(
         }
         .cache()
 
-    override fun list() = api
+    override fun listCities() = api
         .list()
         .zipWith(countriesByCode, BiFunction(::buildModels))!!
 
-    override fun getDetails(cityCode: String) = api
+    override fun getCityDetails(cityCode: String) = api
         .getDetails(cityCode)
         .zipWith(countriesByCode.toMaybe(), BiFunction(::buildModel))!!
 

@@ -22,7 +22,7 @@ class CountriesRepositoryImplTest : BaseTest() {
 
         `when`(api.list()).thenReturn(Single.just(dtos))
 
-        val result = impl.list().blockingGet()
+        val result = impl.listCountries().blockingGet()
 
         assertEquals(expected, result)
     }

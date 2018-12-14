@@ -1,4 +1,5 @@
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'jacoco-android'
 
@@ -27,6 +28,10 @@ android {
             includeAndroidResources = true
         }
     }
+}
+
+androidExtensions {
+    experimental = true
 }
 
 jacoco {

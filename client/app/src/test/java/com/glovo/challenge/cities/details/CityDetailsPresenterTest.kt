@@ -28,7 +28,7 @@ class CityDetailsPresenterTest : BaseTest() {
     fun testOnStart() {
         val city = City(code = "aCode", name = "aName", country = Country("aCode", "aName"), workingArea = emptyList())
 
-        `when`(citiesRepository.getDetails("TODO")).thenReturn(Maybe.just(city))
+        `when`(citiesRepository.getCityDetails("TODO")).thenReturn(Maybe.just(city))
 
         presenter.onStart()
 

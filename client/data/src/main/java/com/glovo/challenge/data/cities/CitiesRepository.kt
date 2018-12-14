@@ -6,8 +6,8 @@ import io.reactivex.Single
 
 interface CitiesRepository {
 
-    fun list(): Single<List<City>>
+    fun listCities(): Single<List<City>>
 
-    fun getDetails(cityCode: String): Maybe<City>
+    fun getCityDetails(cityCode: String): Maybe<City>
 
 }

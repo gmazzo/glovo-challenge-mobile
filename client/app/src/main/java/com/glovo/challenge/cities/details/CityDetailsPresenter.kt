@@ -16,7 +16,7 @@ internal class CityDetailsPresenter @Inject constructor(
 
     override fun onStart() {
         getDetailsDisposable.dispose()
-        getDetailsDisposable = citiesRepository.getDetails("TODO")
+        getDetailsDisposable = citiesRepository.getCityDetails("TODO")
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(view::showDetails)
     }

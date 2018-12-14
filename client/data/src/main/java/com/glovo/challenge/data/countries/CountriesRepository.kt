@@ -5,6 +5,6 @@ import io.reactivex.Single
 
 interface CountriesRepository {
 
-    fun list(): Single<List<Country>>
+    fun listCountries(): Single<List<Country>>
 
 }

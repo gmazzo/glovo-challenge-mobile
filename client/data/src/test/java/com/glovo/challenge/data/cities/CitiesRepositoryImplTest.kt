@@ -24,7 +24,7 @@ class CitiesRepositoryImplTest : BaseTest() {
 
     @Before
     fun setup() {
-        `when`(countriesRepo.list()).thenReturn(Single.just(listOf(COUNTRY_CL, COUNTRY_AR, COUNTRY_ES)))
+        `when`(countriesRepo.listCountries()).thenReturn(Single.just(listOf(COUNTRY_CL, COUNTRY_AR, COUNTRY_ES)))
     }
 
     @Test
@@ -34,7 +34,7 @@ class CitiesRepositoryImplTest : BaseTest() {
 
         `when`(api.list()).thenReturn(Single.just(dtos))
 
-        val result = impl.list().blockingGet()
+        val result = impl.listCities().blockingGet()
 
         assertEquals(expected, result)
     }
@@ -57,7 +57,7 @@ class CitiesRepositoryImplTest : BaseTest() {
     private fun testGetDetails(cityCode: String, dto: CityDTO?, expectedCity: City?) {
         `when`(api.getDetails(cityCode)).thenReturn(Maybe.fromCallable { dto })
 
-        val result = impl.getDetails(cityCode).blockingGet()
+        val result = impl.getCityDetails(cityCode).blockingGet()
 
         assertEquals(expectedCity, result)
     }
