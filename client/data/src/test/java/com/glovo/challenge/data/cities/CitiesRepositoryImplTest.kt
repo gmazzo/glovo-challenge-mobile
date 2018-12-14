@@ -2,8 +2,10 @@ package com.glovo.challenge.data.cities
 
 import com.glovo.challenge.data.BaseTest
 import com.glovo.challenge.data.countries.CountriesRepository
+import com.glovo.challenge.data.geo.GeoService
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.data.models.Country
+import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Maybe
 import io.reactivex.Single
 import org.junit.Assert.assertEquals
@@ -20,11 +22,18 @@ class CitiesRepositoryImplTest : BaseTest() {
     @Mock
     private lateinit var countriesRepo: CountriesRepository
 
-    private val impl by lazy { CitiesRepositoryImpl(api, countriesRepo) }
+    @Mock
+    private lateinit var geoService: GeoService
+
+    private val impl by lazy { CitiesRepositoryImpl(api, countriesRepo, geoService) }
 
     @Before
     fun setup() {
         `when`(countriesRepo.listCountries()).thenReturn(Single.just(listOf(COUNTRY_CL, COUNTRY_AR, COUNTRY_ES)))
+
+        `when`(geoService.decodePolygons(DTO_SCL.workingArea)).thenReturn(CITY_SCL.workingArea)
+        `when`(geoService.decodePolygons(DTO_BUE.workingArea)).thenReturn(CITY_BUE.workingArea)
+        `when`(geoService.decodePolygons(DTO_BCN.workingArea)).thenReturn(CITY_BCN.workingArea)
     }
 
     @Test
@@ -88,11 +97,28 @@ class CitiesRepositoryImplTest : BaseTest() {
         private val COUNTRY_ES = Country(code = "ES", name = "España")
 
         private val CITY_SCL =
-            City(code = DTO_SCL.code, name = DTO_SCL.name, country = COUNTRY_CL, workingArea = DTO_SCL.workingArea)
+            City(
+                code = DTO_SCL.code,
+                name = DTO_SCL.name,
+                country = COUNTRY_CL,
+                workingArea = listOf(listOf(LatLng(1.0, -1.0)))
+            )
+
         private val CITY_BUE =
-            City(code = DTO_BUE.code, name = DTO_BUE.name, country = COUNTRY_AR, workingArea = DTO_BUE.workingArea)
+            City(
+                code = DTO_BUE.code,
+                name = DTO_BUE.name,
+                country = COUNTRY_AR,
+                workingArea = listOf(listOf(LatLng(2.0, -2.0)))
+            )
+
         private val CITY_BCN =
-            City(code = DTO_BCN.code, name = DTO_BCN.name, country = COUNTRY_ES, workingArea = DTO_BCN.workingArea)
+            City(
+                code = DTO_BCN.code,
+                name = DTO_BCN.name,
+                country = COUNTRY_ES,
+                workingArea = listOf(listOf(LatLng(3.0, -3.0)))
+            )
 
     }
 

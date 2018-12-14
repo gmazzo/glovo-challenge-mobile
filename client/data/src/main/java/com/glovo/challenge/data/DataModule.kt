@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.glovo.challenge.data.cities.CitiesModule
 import com.glovo.challenge.data.countries.CountriesModule
+import com.glovo.challenge.data.geo.GeoModule
 import com.glovo.challenge.data.location.LocationModule
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -20,7 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory
         DataModule.Bindings::class,
         CountriesModule::class,
         CitiesModule::class,
-        LocationModule::class]
+        LocationModule::class,
+        GeoModule::class]
 )
 internal class DataModule {
 

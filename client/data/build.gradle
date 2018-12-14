@@ -1,9 +1,17 @@
 apply plugin: 'com.android.library'
 apply from: '../shared.gradle'
 
+android {
+    defaultConfig {
+        buildConfigField 'boolean', 'FLATTERN_WORKAREAS', "${false}"
+    }
+}
+
 dependencies {
     api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation "com.google.android.gms:play-services-maps:$gmsVersion"
     implementation "com.google.android.gms:play-services-location:$gmsVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"

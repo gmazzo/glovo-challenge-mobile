@@ -2,15 +2,12 @@ package com.glovo.challenge.data
 
 import android.app.Application
 import com.glovo.challenge.data.cities.CitiesRepository
-import com.glovo.challenge.data.countries.CountriesRepository
 import com.glovo.challenge.data.location.LocationService
 import dagger.BindsInstance
 import dagger.Component
 
 @Component(modules = [DataModule::class])
 interface DataComponent {
-
-    fun countriesRepository(): CountriesRepository
 
     fun citiesRepository(): CitiesRepository
 

@@ -1,6 +1,7 @@
 package com.glovo.challenge.data.cities
 
 import com.glovo.challenge.data.countries.CountriesRepository
+import com.glovo.challenge.data.geo.GeoService
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.data.models.Country
 import io.reactivex.functions.BiFunction
@@ -8,7 +9,8 @@ import javax.inject.Inject
 
 internal class CitiesRepositoryImpl @Inject constructor(
     private val api: CitiesAPI,
-    countriesRepository: CountriesRepository
+    countriesRepository: CountriesRepository,
+    private val geoService: GeoService
 ) : CitiesRepository {
 
     private val countriesByCode = countriesRepository
@@ -35,7 +37,7 @@ internal class CitiesRepositoryImpl @Inject constructor(
         code = dto.code,
         name = dto.name,
         country = countries[dto.countryCode]!!,
-        workingArea = dto.workingArea
+        workingArea = geoService.decodePolygons(dto.workingArea)
     )
 
 }
