@@ -30,8 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:textAppearanceLarge"
-            android:textSize="30sp"
-            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/country"
             app:layout_constraintBottom_toTopOf="@+id/currencyLabel"
             app:layout_constraintStart_toStartOf="parent"

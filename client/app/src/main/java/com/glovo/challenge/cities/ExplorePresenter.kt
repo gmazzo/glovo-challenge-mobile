@@ -70,6 +70,7 @@ internal class ExplorePresenter @Inject constructor(
             .flatMapObservable { Observable.fromIterable(it) }
             .filter { city -> city.workingBounds.contains(target) }
             .firstElement()
+            .doOnComplete { view.showCity(null, false) }
             .subscribe { view.showCity(it, false) }
     }
 

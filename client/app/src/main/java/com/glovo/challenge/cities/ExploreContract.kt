@@ -11,7 +11,7 @@ internal interface ExploreContract {
 
         fun showCities(workingAreas: List<Triple<City, MarkerOptions, List<PolygonOptions>>>)
 
-        fun showCity(city: City, focusInWholeWorkingArea: Boolean)
+        fun showCity(city: City?, focusInWholeWorkingArea: Boolean)
 
     }
 

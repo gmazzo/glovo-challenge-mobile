@@ -1,5 +1,6 @@
 package com.glovo.challenge.cities.details
 
+import com.glovo.challenge.data.models.City
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,13 +18,13 @@ internal abstract class CityDetailsModule {
     @Module
     companion object {
 
-        const val EXTRA_CITY_CODE = "cityCode"
+        const val EXTRA_CITY = "city"
 
         @Provides
-        @Named(EXTRA_CITY_CODE)
+        @Named(EXTRA_CITY)
         @JvmStatic
-        fun provideCities(fragment: CityDetailsFragment) =
-            fragment.arguments!!.getString(EXTRA_CITY_CODE)!!
+        fun provideCities(fragment: CityDetailsFragment): City =
+            fragment.arguments!!.getParcelable(EXTRA_CITY)!!
 
     }
 

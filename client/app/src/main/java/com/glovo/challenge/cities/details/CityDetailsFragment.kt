@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.glovo.challenge.R
-import com.glovo.challenge.cities.details.CityDetailsModule.Companion.EXTRA_CITY_CODE
+import com.glovo.challenge.cities.details.CityDetailsModule.Companion.EXTRA_CITY
 import com.glovo.challenge.data.models.City
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_city_details.*
@@ -48,8 +48,8 @@ class CityDetailsFragment : DaggerFragment(), CityDetailsContract.View {
 
     companion object {
 
-        fun newInstance(cityCode: String) = CityDetailsFragment().apply {
-            arguments = bundleOf(EXTRA_CITY_CODE to cityCode)
+        fun newInstance(city: City) = CityDetailsFragment().apply {
+            arguments = bundleOf(EXTRA_CITY to city)
         }
 
     }

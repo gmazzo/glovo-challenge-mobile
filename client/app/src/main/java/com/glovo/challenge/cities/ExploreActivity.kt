@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.glovo.challenge.R
 import com.glovo.challenge.cities.ExploreModule.Companion.EXTRA_INITIAL_DATA
 import com.glovo.challenge.cities.details.CityDetailsFragment
+import com.glovo.challenge.cities.details.NoCityDetailsFragment
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.models.InitialData
 import com.glovo.utils.hasLocationPermission
@@ -83,21 +85,29 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         }
     }
 
-    override fun showCity(city: City, focusInWholeWorkingArea: Boolean) {
+    override fun showCity(city: City?, focusInWholeWorkingArea: Boolean) {
         if (city != currentCity) {
             currentCity = city
 
-            if (focusInWholeWorkingArea) {
-                googleMap.animateCamera(
-                    CameraUpdateFactory.newLatLngBounds(
-                        city.workingBounds,
-                        resources.getDimensionPixelOffset(R.dimen.working_areas_padding)
+            val fragment: Fragment
+            if (city != null) {
+                fragment = CityDetailsFragment.newInstance(city)
+
+                if (focusInWholeWorkingArea) {
+                    googleMap.animateCamera(
+                        CameraUpdateFactory.newLatLngBounds(
+                            city.workingBounds,
+                            resources.getDimensionPixelOffset(R.dimen.working_areas_padding)
+                        )
                     )
-                )
+                }
+                
+            } else {
+                fragment = NoCityDetailsFragment()
             }
 
             supportFragmentManager.beginTransaction()
-                .replace(R.id.cityDetails, CityDetailsFragment.newInstance(city.code))
+                .replace(R.id.cityDetails, fragment)
                 .commitNow()
         }
     }
