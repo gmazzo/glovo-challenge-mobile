@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/city_details_peek_height"
-    android:padding="@dimen/margin"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin"
     android:gravity="center"
     android:text="@string/fragment_city_no_details"
     android:textAppearance="?android:textAppearanceLarge" />
