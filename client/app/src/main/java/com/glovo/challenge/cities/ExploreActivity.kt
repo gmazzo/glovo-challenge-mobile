@@ -59,6 +59,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
         toolbar.inflateMenu(R.menu.activity_explore)
         toolbar.setOnMenuItemClickListener(::onOptionsItemSelected)
+        toolbar.menu.findItem(R.id.myLocation).isVisible = hasLocationPermission
 
         @Suppress("CAST_NEVER_SUCCEEDS") // it will, just yelling because AndroidX
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
@@ -195,6 +196,10 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         when (item.itemId) {
             R.id.pickCity -> {
                 showChooseCities()
+                true
+            }
+            R.id.myLocation -> {
+                presenter.onPickMyLocation()
                 true
             }
             else -> super.onOptionsItemSelected(item)

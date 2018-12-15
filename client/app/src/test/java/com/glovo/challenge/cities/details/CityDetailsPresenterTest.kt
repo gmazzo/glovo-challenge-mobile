@@ -27,7 +27,7 @@ class CityDetailsPresenterTest : BaseTest() {
 
     @Test
     fun testOnStart() {
-        `when`(citiesRepository.getCityDetails("TODO")).thenReturn(Maybe.just(city))
+        `when`(citiesRepository.getCityDetails(city.code)).thenReturn(Maybe.just(city))
 
         presenter.onStart()
 

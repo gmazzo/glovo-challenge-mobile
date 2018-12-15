@@ -21,9 +21,6 @@ internal class ChooseCityPresenter @Inject constructor(
 
         listCitiesDisposable = citiesRepository.listCities()
             .map(::sortAndAddCountries)
-            .doOnSuccess {
-                System.out.print(it)
-            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(view::showItems)
     }

@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import com.glovo.challenge.R
 import com.glovo.challenge.data.cities.CitiesRepository
+import com.glovo.challenge.data.location.LocationService
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.data.models.WorkingArea
 import com.glovo.challenge.models.InitialData
@@ -22,9 +23,10 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 internal class ExplorePresenter @Inject constructor(
+    private val view: ExploreContract.View,
     context: Context,
     citiesRepository: CitiesRepository,
-    private val view: ExploreContract.View,
+    private val locationService: LocationService,
     private val initialData: InitialData?,
     private val markerIcon: Lazy<BitmapDescriptor>
 ) : ExploreContract.Presenter {
@@ -45,6 +47,9 @@ internal class ExplorePresenter @Inject constructor(
 
     @VisibleForTesting
     internal var tryFindCityDisposable = Disposables.disposed()
+
+    @VisibleForTesting
+    internal var getCurrentLocationDisposable = Disposables.disposed()
 
     private var focusOnInitialLocation: Boolean = true
 
@@ -97,8 +102,19 @@ internal class ExplorePresenter @Inject constructor(
             .subscribe { view.showCity(it, focusInWholeWorkingArea) }
     }
 
+    override fun onPickMyLocation() {
+        getCurrentLocationDisposable.dispose()
+
+        getCurrentLocationDisposable = locationService.getCurrentLocation()
+            .map { LatLng(it.latitude, it.longitude) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { focusMapOnTarget(it, true) }
+    }
+
     override fun onStop() {
         loadWorkAreasDisposable.dispose()
+        tryFindCityDisposable.dispose()
+        getCurrentLocationDisposable.dispose()
     }
 
     private val City.markerOptions

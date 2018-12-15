@@ -27,6 +27,8 @@ internal interface ExploreContract {
 
         fun onMapFocusTarget(target: LatLng)
 
+        fun onPickMyLocation()
+
         fun onStop()
 
     }
