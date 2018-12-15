@@ -3,8 +3,6 @@
 
     <dimen name="margin">16dp</dimen>
 
-    <dimen name="city_details_collapse_threshold">100dp</dimen>
-
     <dimen name="working_areas_padding">@dimen/margin</dimen>
 
 </resources>

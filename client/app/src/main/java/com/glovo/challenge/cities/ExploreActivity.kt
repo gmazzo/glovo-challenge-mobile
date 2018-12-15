@@ -3,7 +3,6 @@ package com.glovo.challenge.cities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Point
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.glovo.challenge.R
@@ -16,13 +15,9 @@ import com.glovo.utils.hasLocationPermission
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polygon
-import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.*
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 
 class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
@@ -31,91 +26,124 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private lateinit var googleMap: GoogleMap
 
-    private val markersThreshold by lazy { resources.getDimension(R.dimen.city_details_collapse_threshold) }
+    private val citiesGeo = mutableMapOf<City, CityGeo>()
 
-    private val citiesMarkersAndAreas = mutableListOf<Pair<Marker, List<Polygon>>>()
+    private val currentCityGeo = mutableListOf<Polygon>()
 
     private var currentCity: City? = null
 
-    private var currentZoom: Float = 0f
+    private val currentGeo get() = currentCity?.let { citiesGeo[it] }
+
+    private var showMarkers: Boolean = true
+        set(value) {
+            if (field != value) {
+                field = value
+
+                updateGeoVisibility()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_explore)
-    }
 
-    override fun onStart() {
-        super.onStart()
+        presenter.setFocusOnInitialLocation(savedInstanceState == null)
 
+        @Suppress("CAST_NEVER_SUCCEEDS") // it will, just yelling because AndroidX
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(::onMapReady)
     }
 
-    @SuppressLint("MissingPermission")
     private fun onMapReady(googleMap: GoogleMap) {
-        this.googleMap = googleMap.apply {
-            isMyLocationEnabled = hasLocationPermission
-            setOnMapClickListener(presenter::onMapFocusTarget)
-            setOnCameraMoveListener(::onCameraMove)
-            setOnMarkerClickListener(::onMarkerClick)
-        }
+        this.googleMap = googleMap
 
         presenter.onMapReady()
     }
 
-    private fun onCameraMove() {
-        presenter.onMapFocusTarget(googleMap.cameraPosition.target)
-
-        showOrHideMarkers()
-    }
-
-    private fun showOrHideMarkers() {
-        val zoom = googleMap.cameraPosition.zoom
-
-        if ((currentZoom - zoom).absoluteValue > .1f) {
-            currentZoom = zoom
-
-            citiesMarkersAndAreas.forEach { (marker, polis) ->
-                val p1 = googleMap.projection.toScreenLocation(marker.city.workingBounds.northeast)
-                val p2 = googleMap.projection.toScreenLocation(marker.city.workingBounds.southwest)
-                val distance = p1.distanceTo(p2)
-
-                marker.isVisible = distance < markersThreshold
-                polis.forEach { it.isVisible = !marker.isVisible }
-            }
+    @SuppressLint("MissingPermission")
+    override fun onLoadReady() {
+        googleMap.apply {
+            isMyLocationEnabled = hasLocationPermission
+            setOnMapClickListener(::onMapClick)
+            setOnCameraMoveListener(::onCameraMove)
+            setOnCameraIdleListener(::onCameraIdle)
+            setOnMarkerClickListener(::onMarkerClick)
         }
     }
 
+    private fun onCameraMove() {
+        // checks if we need to show or hide the markers
+        showMarkers = googleMap.cameraPosition.zoom < 8
+    }
+
+    private fun onMapClick(latLng: LatLng) {
+        // tries to focus on a city by click in a point in the map
+        presenter.onMapFocusTarget(latLng, false)
+    }
+
+    private fun onCameraIdle() {
+        // tries to focus on a city that is in the center of the map
+        presenter.onMapFocusTarget(googleMap.cameraPosition.target, true)
+    }
+
     private fun onMarkerClick(marker: Marker): Boolean {
+        // focus in the city whose marker has been clicked
         showCity(marker.city, true)
         return true
     }
 
-    private fun clearCities() {
-        citiesMarkersAndAreas.forEach { (marker, polis) ->
-            marker.remove()
-            polis.forEach(Polygon::remove)
+    private fun updateGeoVisibility() {
+        val current = currentGeo?.marker
+        val shouldShow = showMarkers
+
+        citiesGeo.values.forEach { it.marker.isVisible = (shouldShow || it.marker != current) }
+        currentCityGeo.forEach { it.isVisible = !shouldShow }
+    }
+
+    private fun clearCitiesGeo() {
+        citiesGeo.values.map(CityGeo::marker).forEach(Marker::remove)
+        citiesGeo.clear()
+    }
+
+    override fun showCities(citiesGeoData: List<Triple<City, MarkerOptions, List<PolygonOptions>>>) {
+        clearCitiesGeo()
+
+        citiesGeoData.forEach { (city, markerOpt, poliOpts) ->
+            val marker = googleMap.addMarker(markerOpt).apply { tag = city }
+
+            citiesGeo[city] = CityGeo(marker, poliOpts)
         }
     }
 
-    override fun showCities(workingAreas: List<Triple<City, MarkerOptions, List<PolygonOptions>>>) {
-        clearCities()
-
-        workingAreas.forEach { (city, markerOpt, poliOpts) ->
-            val marker = googleMap.addMarker(markerOpt).apply { tag = city }
-            val polygons = poliOpts.map(googleMap::addPolygon)
-
-            citiesMarkersAndAreas.add(marker to polygons)
-        }
-
-        onCameraMove()
+    private fun clearCurrentCityGeo() {
+        currentCityGeo.forEach(Polygon::remove)
+        currentCityGeo.clear()
     }
 
     override fun showCity(city: City?, focusInWholeWorkingArea: Boolean) {
         if (city != currentCity) {
+            // we switch back on the previous marker visibility before changing the current one
+            currentGeo?.marker?.isVisible = true
+
             currentCity = city
 
+            // updates the current working areas
+            clearCurrentCityGeo()
+            if (city != null) {
+                val current = currentGeo!!
+
+                current.marker.isVisible = false
+                current.polygons
+                    .map(googleMap::addPolygon)
+                    .forEach {
+                        it.tag = city
+
+                        currentCityGeo.add(it)
+                    }
+            }
+
+            // updated the info panel
             val fragment: Fragment
             if (city != null) {
                 fragment = CityDetailsFragment.newInstance(city)
@@ -147,10 +175,6 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private val Marker.city get() = tag as City
 
-    private fun Point.distanceTo(other: Point) =
-        Math.sqrt(Math.pow(x.toDouble() - other.x, 2.0) + Math.pow(y.toDouble() - other.y, 2.0))
-
-
     companion object {
 
         fun makeIntent(context: Context, initialData: InitialData?) =
@@ -159,5 +183,10 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
             }
 
     }
+
+    private data class CityGeo(
+        val marker: Marker,
+        val polygons: List<PolygonOptions>
+    )
 
 }

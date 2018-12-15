@@ -37,7 +37,7 @@ internal class ExplorePresenter @Inject constructor(
 
     private val getCities = Maybe.fromCallable { initialData?.cities }
         .switchIfEmpty(citiesRepository.listCities())
-        .subscribeOn(Schedulers.io())
+        .subscribeOn(Schedulers.computation())
         .cache()
 
     @VisibleForTesting
@@ -46,10 +46,14 @@ internal class ExplorePresenter @Inject constructor(
     @VisibleForTesting
     internal var tryFindCityDisposable = Disposables.disposed()
 
+    private var focusOnInitialLocation: Boolean = true
+
+    override fun setFocusOnInitialLocation(focusOnInitialLocation: Boolean) {
+        this.focusOnInitialLocation = focusOnInitialLocation
+    }
+
     override fun onMapReady() {
         loadWorkAreas()
-
-        initialData?.location?.let { onMapFocusTarget(LatLng(it.latitude, it.longitude)) }
     }
 
     private fun loadWorkAreas() {
@@ -58,12 +62,25 @@ internal class ExplorePresenter @Inject constructor(
         loadWorkAreasDisposable = getCities
             .map { it.map { city -> Triple(city, city.markerOptions, city.workingArea.polygonOptions) } }
             .observeOn(AndroidSchedulers.mainThread())
+            .doAfterTerminate(view::onLoadReady)
+            .doAfterTerminate(::focusOnInitialLocation)
             .subscribe(view::showCities)
     }
 
-    override fun onMapFocusTarget(target: LatLng) = tryFindCity(target)
+    private fun focusOnInitialLocation() {
+        if (focusOnInitialLocation) {
+            initialData?.location?.let {
+                focusMapOnTarget(
+                    LatLng(it.latitude, it.longitude), false, true
+                )
+            }
+        }
+    }
 
-    private fun tryFindCity(target: LatLng) {
+    override fun onMapFocusTarget(target: LatLng, ignoreIfNotFound: Boolean) =
+        focusMapOnTarget(target, ignoreIfNotFound, false)
+
+    private fun focusMapOnTarget(target: LatLng, ignoreIfNotFound: Boolean, focusInWholeWorkingArea: Boolean) {
         tryFindCityDisposable.dispose()
 
         tryFindCityDisposable = getCities
@@ -71,8 +88,12 @@ internal class ExplorePresenter @Inject constructor(
             .filter { city -> city.workingBounds.contains(target) }
             .firstElement()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnComplete { view.showCity(null, false) }
-            .subscribe { view.showCity(it, false) }
+            .doOnComplete {
+                if (!ignoreIfNotFound) {
+                    view.showCity(null, focusInWholeWorkingArea)
+                }
+            }
+            .subscribe { view.showCity(it, focusInWholeWorkingArea) }
     }
 
     override fun onStop() {
