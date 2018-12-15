@@ -9,11 +9,13 @@ internal interface ExploreContract {
 
     interface View {
 
+        fun onLoadReady()
+
         fun showCities(citiesGeoData: List<Triple<City, MarkerOptions, List<PolygonOptions>>>)
 
         fun showCity(city: City?, focusInWholeWorkingArea: Boolean)
 
-        fun onLoadReady()
+        fun showChooseCities()
 
     }
 
@@ -23,7 +25,7 @@ internal interface ExploreContract {
 
         fun onMapReady()
 
-        fun onMapFocusTarget(target: LatLng, ignoreIfNotFound: Boolean)
+        fun onMapFocusTarget(target: LatLng)
 
         fun onStop()
 

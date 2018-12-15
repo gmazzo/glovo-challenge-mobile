@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.glovo.challenge.BuildConfig
 import com.glovo.challenge.R
 import com.glovo.challenge.cities.ExploreModule.Companion.EXTRA_INITIAL_DATA
+import com.glovo.challenge.cities.chooser.ChooseCityFragment
 import com.glovo.challenge.cities.details.CityDetailsFragment
 import com.glovo.challenge.cities.details.CityNoDetailsFragment
 import com.glovo.challenge.data.models.City
@@ -16,8 +18,12 @@ import com.glovo.utils.hasLocationPermission
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.PolygonOptions
 import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.android.synthetic.main.activity_explore.*
 import javax.inject.Inject
 
 class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
@@ -51,6 +57,9 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
         presenter.setFocusOnInitialLocation(savedInstanceState == null)
 
+        toolbar.inflateMenu(R.menu.activity_explore)
+        toolbar.setOnMenuItemClickListener(::onOptionsItemSelected)
+
         @Suppress("CAST_NEVER_SUCCEEDS") // it will, just yelling because AndroidX
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(::onMapReady)
@@ -80,7 +89,6 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
     override fun onLoadReady() {
         googleMap.apply {
             isMyLocationEnabled = hasLocationPermission
-            setOnMapClickListener(::onMapClick)
             setOnCameraMoveListener(::onCameraMove)
             setOnCameraIdleListener(::onCameraIdle)
             setOnMarkerClickListener(::onMarkerClick)
@@ -92,14 +100,9 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         showMarkers = googleMap.cameraPosition.zoom < 8
     }
 
-    private fun onMapClick(latLng: LatLng) {
-        // tries to focus on a city by click in a point in the map
-        presenter.onMapFocusTarget(latLng, false)
-    }
-
     private fun onCameraIdle() {
         // tries to focus on a city that is in the center of the map
-        presenter.onMapFocusTarget(googleMap.cameraPosition.target, true)
+        presenter.onMapFocusTarget(googleMap.cameraPosition.target)
     }
 
     private fun onMarkerClick(marker: Marker): Boolean {
@@ -137,7 +140,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
     }
 
     override fun showCity(city: City?, focusInWholeWorkingArea: Boolean) {
-        if (city != currentCity) {
+        if (city != currentCity || city == null) {
             // we switch back on the previous marker visibility before changing the current one
             currentGeo?.marker?.isVisible = true
 
@@ -181,6 +184,21 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
                 .commitNow()
         }
     }
+
+    override fun showChooseCities() {
+        supportFragmentManager.beginTransaction()
+            .add(ChooseCityFragment(), null)
+            .commit()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.pickCity -> {
+                showChooseCities()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun onStop() {
         super.onStop()

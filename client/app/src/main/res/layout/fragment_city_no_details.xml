@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/button"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin"
-    android:text="@string/fragment_city_no_details" />
+    android:gravity="center"
+    android:text="@string/action_pick_city"
+    android:textAppearance="?android:textAppearanceLarge" />

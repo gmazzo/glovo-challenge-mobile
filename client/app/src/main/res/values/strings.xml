@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Glovo Test App</string>
 
+    <string name="action_pick_city">Pick a City</string>
+
     <string name="fragment_city_details_currency">Currency</string>
     <string name="fragment_city_details_timezone">Timezone</string>
-    <string name="fragment_city_no_details">Choose a City</string>
 
 </resources>

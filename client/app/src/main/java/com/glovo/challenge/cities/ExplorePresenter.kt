@@ -69,18 +69,24 @@ internal class ExplorePresenter @Inject constructor(
 
     private fun focusOnInitialLocation() {
         if (focusOnInitialLocation) {
-            initialData?.location?.let {
+            val initialLocation = initialData?.location
+
+            if (initialLocation != null) {
                 focusMapOnTarget(
-                    LatLng(it.latitude, it.longitude), false, true
+                    LatLng(initialLocation.latitude, initialLocation.longitude), true
                 )
+
+            } else {
+                view.showCity(null, false)
+                view.showChooseCities()
             }
         }
     }
 
-    override fun onMapFocusTarget(target: LatLng, ignoreIfNotFound: Boolean) =
-        focusMapOnTarget(target, ignoreIfNotFound, false)
+    override fun onMapFocusTarget(target: LatLng) =
+        focusMapOnTarget(target, false)
 
-    private fun focusMapOnTarget(target: LatLng, ignoreIfNotFound: Boolean, focusInWholeWorkingArea: Boolean) {
+    private fun focusMapOnTarget(target: LatLng, focusInWholeWorkingArea: Boolean) {
         tryFindCityDisposable.dispose()
 
         tryFindCityDisposable = getCities
@@ -88,11 +94,6 @@ internal class ExplorePresenter @Inject constructor(
             .filter { city -> city.workingBounds.contains(target) }
             .firstElement()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnComplete {
-                if (!ignoreIfNotFound) {
-                    view.showCity(null, focusInWholeWorkingArea)
-                }
-            }
             .subscribe { view.showCity(it, focusInWholeWorkingArea) }
     }
 
