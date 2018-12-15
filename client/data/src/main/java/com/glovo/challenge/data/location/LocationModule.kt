@@ -11,6 +11,7 @@ import dagger.Reusable
 internal abstract class LocationModule {
 
     @Binds
+    @Reusable
     abstract fun bindLocationService(impl: LocationServiceImpl): LocationService
 
     @Module

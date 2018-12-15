@@ -6,12 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out">
+    android:outAnimation="@android:anim/fade_out"
+    android:padding="@dimen/margin">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/margin">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAppearance="?android:textAppearanceLarge"
+            android:textAppearance="@style/TextAppearance.AppTheme.XLarge"
             app:layout_constraintTop_toBottomOf="@id/country"
             app:layout_constraintBottom_toTopOf="@+id/currencyLabel"
             app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,6 @@
 
     <ProgressBar
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/margin" />
+        android:layout_height="match_parent" />
 
 </ViewSwitcher>

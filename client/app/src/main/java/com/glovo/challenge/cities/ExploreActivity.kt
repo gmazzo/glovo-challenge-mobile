@@ -5,10 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.glovo.challenge.BuildConfig
 import com.glovo.challenge.R
 import com.glovo.challenge.cities.ExploreModule.Companion.EXTRA_INITIAL_DATA
 import com.glovo.challenge.cities.details.CityDetailsFragment
-import com.glovo.challenge.cities.details.NoCityDetailsFragment
+import com.glovo.challenge.cities.details.CityNoDetailsFragment
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.models.InitialData
 import com.glovo.utils.hasLocationPermission
@@ -28,7 +29,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private val citiesGeo = mutableMapOf<City, CityGeo>()
 
-    private val currentCityGeo = mutableListOf<Polygon>()
+    private val currentCityWorkingArea = mutableListOf<Polygon>()
 
     private var currentCity: City? = null
 
@@ -53,6 +54,20 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         @Suppress("CAST_NEVER_SUCCEEDS") // it will, just yelling because AndroidX
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(::onMapReady)
+
+        onHandleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        onHandleIntent(intent)
+    }
+
+    private fun onHandleIntent(intent: Intent?) {
+        when (intent?.action) {
+            ACTION_FOCUS_CITY -> showCity(intent.getParcelableExtra(EXTRA_CITY), true)
+        }
     }
 
     private fun onMapReady(googleMap: GoogleMap) {
@@ -98,7 +113,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         val shouldShow = showMarkers
 
         citiesGeo.values.forEach { it.marker.isVisible = (shouldShow || it.marker != current) }
-        currentCityGeo.forEach { it.isVisible = !shouldShow }
+        currentCityWorkingArea.forEach { it.isVisible = !shouldShow }
     }
 
     private fun clearCitiesGeo() {
@@ -117,8 +132,8 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
     }
 
     private fun clearCurrentCityGeo() {
-        currentCityGeo.forEach(Polygon::remove)
-        currentCityGeo.clear()
+        currentCityWorkingArea.forEach(Polygon::remove)
+        currentCityWorkingArea.clear()
     }
 
     override fun showCity(city: City?, focusInWholeWorkingArea: Boolean) {
@@ -139,7 +154,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
                     .forEach {
                         it.tag = city
 
-                        currentCityGeo.add(it)
+                        currentCityWorkingArea.add(it)
                     }
             }
 
@@ -158,7 +173,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
                 }
 
             } else {
-                fragment = NoCityDetailsFragment()
+                fragment = CityNoDetailsFragment()
             }
 
             supportFragmentManager.beginTransaction()
@@ -175,18 +190,26 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private val Marker.city get() = tag as City
 
+    private data class CityGeo(
+        val marker: Marker,
+        val polygons: List<PolygonOptions>
+    )
+
     companion object {
+        private const val ACTION_FOCUS_CITY = BuildConfig.APPLICATION_ID + ".ACTION_FOCUS_CITY"
+        private const val EXTRA_CITY = "city"
 
         fun makeIntent(context: Context, initialData: InitialData?) =
             Intent(context, ExploreActivity::class.java).apply {
                 putExtra(EXTRA_INITIAL_DATA, initialData)
             }
 
-    }
+        fun makeIntent(context: Context, city: City) =
+            Intent(context, ExploreActivity::class.java).apply {
+                action = ACTION_FOCUS_CITY
+                putExtra(EXTRA_CITY, city)
+            }
 
-    private data class CityGeo(
-        val marker: Marker,
-        val polygons: List<PolygonOptions>
-    )
+    }
 
 }

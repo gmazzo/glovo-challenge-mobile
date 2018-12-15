@@ -21,12 +21,12 @@ class CityDetailsPresenterTest : BaseTest() {
     @Mock
     internal lateinit var disposable: Disposable
 
-    private val presenter by lazy { CityDetailsPresenter(view, citiesRepository) }
+    private val city = testCity.copy(code = "city1")
+
+    private val presenter by lazy { CityDetailsPresenter(view, citiesRepository, city) }
 
     @Test
     fun testOnStart() {
-        val city = testCity.copy(code = "city1")
-
         `when`(citiesRepository.getCityDetails("TODO")).thenReturn(Maybe.just(city))
 
         presenter.onStart()

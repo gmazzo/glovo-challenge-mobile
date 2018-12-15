@@ -27,7 +27,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".cities.ExploreActivity" />
+        <activity
+            android:name=".cities.ExploreActivity"
+            android:launchMode="singleTop" />
 
     </application>
 

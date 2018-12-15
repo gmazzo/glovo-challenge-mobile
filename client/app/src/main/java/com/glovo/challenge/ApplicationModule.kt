@@ -3,6 +3,8 @@ package com.glovo.challenge
 import android.content.Context
 import com.glovo.challenge.cities.ExploreActivity
 import com.glovo.challenge.cities.ExploreModule
+import com.glovo.challenge.cities.chooser.ChooseCityFragment
+import com.glovo.challenge.cities.chooser.ChooseCityModule
 import com.glovo.challenge.cities.details.CityDetailsFragment
 import com.glovo.challenge.cities.details.CityDetailsModule
 import com.glovo.challenge.splash.SplashActivity
@@ -22,6 +24,9 @@ interface ApplicationModule {
 
     @ContributesAndroidInjector(modules = [ExploreModule::class])
     fun exploreActivity(): ExploreActivity
+
+    @ContributesAndroidInjector(modules = [ChooseCityModule::class])
+    fun chooseCityFragment(): ChooseCityFragment
 
     @ContributesAndroidInjector(modules = [CityDetailsModule::class])
     fun cityDetailsFragment(): CityDetailsFragment

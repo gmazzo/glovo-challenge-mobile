@@ -5,7 +5,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:textAppearanceLarge">@style/TextAppearance.AppTheme.Large</item>
+        <item name="buttonStyle">@style/Widget.AppTheme.Button</item>
         <item name="cardViewStyle">@style/Widget.AppTheme.CardView</item>
     </style>
 
@@ -13,11 +13,18 @@
         <item name="android:windowBackground">@color/glovo_yellow</item>
     </style>
 
+    <style name="AppTheme.Dialog" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
+    <style name="Widget.AppTheme.Button" parent="Widget.AppCompat.Button.Borderless.Colored" />
+
     <style name="Widget.AppTheme.CardView" parent="CardView.Light">
         <item name="cardBackgroundColor">@color/glovo_yellow</item>
     </style>
 
-    <style name="TextAppearance.AppTheme.Large" parent="TextAppearance.AppCompat.Large">
+    <style name="TextAppearance.AppTheme.XLarge" parent="TextAppearance.AppCompat.Large">
         <item name="android:textSize">30sp</item>
         <item name="android:textStyle">bold</item>
     </style>

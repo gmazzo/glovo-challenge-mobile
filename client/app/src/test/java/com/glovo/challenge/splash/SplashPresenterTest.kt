@@ -4,6 +4,7 @@ import android.location.Location
 import com.glovo.challenge.BaseTest
 import com.glovo.challenge.data.cities.CitiesRepository
 import com.glovo.challenge.data.location.LocationService
+import com.glovo.challenge.models.InitialData
 import com.glovo.challenge.testCity
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -51,7 +52,7 @@ class SplashPresenterTest : BaseTest() {
 
         presenter.onStart()
 
-        verify(view).onReady(cities, location)
+        verify(view).onReady(InitialData(cities, location))
     }
 
     @Test
