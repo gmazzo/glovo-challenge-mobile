@@ -13,6 +13,9 @@ import com.glovo.utils.hasLocationPermission
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
@@ -22,7 +25,11 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
     @Inject
     internal lateinit var presenter: ExploreContract.Presenter
 
-    private lateinit var map: GoogleMap
+    private lateinit var googleMap: GoogleMap
+
+    private val citiesMarkersAndAreas = mutableListOf<Pair<Marker, List<Polygon>>>()
+
+    private var currentCity: City? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,40 +41,65 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         super.onStart()
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        mapFragment.getMapAsync {
-            map = it
+        mapFragment.getMapAsync(::onMapReady)
+    }
 
-            @SuppressLint("MissingPermission")
-            map.isMyLocationEnabled = hasLocationPermission
+    @SuppressLint("MissingPermission")
+    private fun onMapReady(googleMap: GoogleMap) {
+        this.googleMap = googleMap.apply {
+            isMyLocationEnabled = hasLocationPermission
+            setOnMapClickListener(presenter::onMapFocusTarget)
+            setOnCameraMoveListener(::onCameraMove)
+            setOnMarkerClickListener(::onMarkerClick)
+        }
 
-            map.setOnPolygonClickListener { poly ->
-                showCity(poly.tag as City)
-            }
+        presenter.onMapReady()
+    }
 
-            presenter.onMapReady()
+    private fun onCameraMove() {
+        presenter.onMapFocusTarget(googleMap.cameraPosition.target)
+    }
+
+    private fun onMarkerClick(marker: Marker): Boolean {
+        showCity(city = marker.tag as City, focusInWholeWorkingArea = true)
+        return true
+    }
+
+    private fun clearCities() {
+        citiesMarkersAndAreas.forEach { (a, b) ->
+            a.remove()
+            b.forEach(Polygon::remove)
         }
     }
 
-    override fun showWorkAreas(workingAreas: List<Pair<City, PolygonOptions>>) {
-        workingAreas.forEach { (city, poly) ->
-            map.addPolygon(poly).apply {
-                tag = city
-                isClickable = true
-            }
+    override fun showCities(workingAreas: List<Triple<City, MarkerOptions, List<PolygonOptions>>>) {
+        clearCities()
+
+        workingAreas.forEach { (city, markerOpt, poliOpts) ->
+            val marker = googleMap.addMarker(markerOpt).apply { tag = city }
+            val polygons = poliOpts.map(googleMap::addPolygon)
+
+            citiesMarkersAndAreas.add(marker to polygons)
         }
     }
 
-    override fun showCity(city: City) {
-        map.moveCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                city.workingBounds,
-                resources.getDimensionPixelOffset(R.dimen.working_areas_padding)
-            )
-        )
+    override fun showCity(city: City, focusInWholeWorkingArea: Boolean) {
+        if (city != currentCity) {
+            currentCity = city
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.cityDetails, CityDetailsFragment.newInstance(city.code))
-            .commitNow()
+            if (focusInWholeWorkingArea) {
+                googleMap.animateCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                        city.workingBounds,
+                        resources.getDimensionPixelOffset(R.dimen.working_areas_padding)
+                    )
+                )
+            }
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.cityDetails, CityDetailsFragment.newInstance(city.code))
+                .commitNow()
+        }
     }
 
     override fun onStop() {
