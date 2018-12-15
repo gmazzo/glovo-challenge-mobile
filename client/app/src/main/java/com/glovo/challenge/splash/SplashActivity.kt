@@ -4,6 +4,8 @@ import android.os.Bundle
 import com.glovo.challenge.R
 import com.glovo.challenge.cities.ExploreActivity
 import com.glovo.challenge.models.InitialData
+import com.glovo.utils.hasLocationPermission
+import com.glovo.utils.requestLocationPermission
 import dagger.android.DaggerActivity
 import javax.inject.Inject
 
@@ -21,9 +23,25 @@ class SplashActivity : DaggerActivity(), SplashContract.View {
     override fun onStart() {
         super.onStart()
 
-        // TODO ask for permissions
-        
-        presenter.onStart()
+        askLocationPermission()
+    }
+
+    private fun askLocationPermission() {
+        if (hasLocationPermission) {
+            presenter.onStart()
+
+        } else {
+            requestLocationPermission(RC_ASK_PERMISSIONS)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == RC_ASK_PERMISSIONS) {
+            // no mather the result here, we have to continue
+            presenter.onStart()
+        }
     }
 
     override fun onReady(initialData: InitialData) {
@@ -37,6 +55,12 @@ class SplashActivity : DaggerActivity(), SplashContract.View {
         super.onStop()
 
         presenter.onStop()
+    }
+
+    companion object {
+
+        const val RC_ASK_PERMISSIONS = 1000
+
     }
 
 }

@@ -1,16 +1,15 @@
 package com.glovo.challenge.cities
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import com.glovo.challenge.R
 import com.glovo.challenge.cities.ExploreModule.Companion.EXTRA_INITIAL_DATA
 import com.glovo.challenge.cities.details.CityDetailsFragment
 import com.glovo.challenge.data.models.City
 import com.glovo.challenge.models.InitialData
+import com.glovo.utils.hasLocationPermission
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -37,10 +36,9 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync {
             map = it
-            map.isMyLocationEnabled = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+
+            @SuppressLint("MissingPermission")
+            map.isMyLocationEnabled = hasLocationPermission
 
             map.setOnPolygonClickListener { poly ->
                 showCity(poly.tag as City)

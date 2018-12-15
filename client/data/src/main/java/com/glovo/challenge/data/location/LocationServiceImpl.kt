@@ -1,12 +1,14 @@
 package com.glovo.challenge.data.location
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Location
-import androidx.core.content.ContextCompat
+import com.glovo.utils.hasLocationPermission
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.tasks.Tasks
 import io.reactivex.Maybe
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class LocationServiceImpl @Inject constructor(
@@ -14,16 +16,13 @@ internal class LocationServiceImpl @Inject constructor(
     private val client: FusedLocationProviderClient
 ) : LocationService {
 
+    @SuppressLint("MissingPermission")
     override fun getCurrentLocation() = Maybe.fromCallable<Location> {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            client.lastLocation.result
-        } else {
+        if (context.hasLocationPermission)
+            Tasks.await(client.lastLocation, 3, TimeUnit.SECONDS)
+        else
             null
-        }
-    }!!
+
+    }.subscribeOn(Schedulers.io())!!
 
 }

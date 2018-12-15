@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.PolygonOptions
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 internal class ExplorePresenter @Inject constructor(
@@ -40,6 +41,7 @@ internal class ExplorePresenter @Inject constructor(
         loadWorkAreasDisposable.dispose()
 
         loadWorkAreasDisposable = Maybe.fromCallable { initialData?.cities }
+            .subscribeOn(Schedulers.io())
             .switchIfEmpty(citiesRepository.listCities())
             .map {
                 it.flatMap { city -> city.workingArea.polygonOptions.map { poly -> city to poly } }
