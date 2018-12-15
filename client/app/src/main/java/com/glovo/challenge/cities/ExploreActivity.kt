@@ -3,6 +3,7 @@ package com.glovo.challenge.cities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.glovo.challenge.R
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
@@ -29,9 +31,13 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private lateinit var googleMap: GoogleMap
 
+    private val markersThreshold by lazy { resources.getDimension(R.dimen.city_details_collapse_threshold) }
+
     private val citiesMarkersAndAreas = mutableListOf<Pair<Marker, List<Polygon>>>()
 
     private var currentCity: City? = null
+
+    private var currentZoom: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +66,36 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private fun onCameraMove() {
         presenter.onMapFocusTarget(googleMap.cameraPosition.target)
+
+        showOrHideMarkers()
+    }
+
+    private fun showOrHideMarkers() {
+        val zoom = googleMap.cameraPosition.zoom
+
+        if ((currentZoom - zoom).absoluteValue > .1f) {
+            currentZoom = zoom
+
+            citiesMarkersAndAreas.forEach { (marker, polis) ->
+                val p1 = googleMap.projection.toScreenLocation(marker.city.workingBounds.northeast)
+                val p2 = googleMap.projection.toScreenLocation(marker.city.workingBounds.southwest)
+                val distance = p1.distanceTo(p2)
+
+                marker.isVisible = distance < markersThreshold
+                polis.forEach { it.isVisible = !marker.isVisible }
+            }
+        }
     }
 
     private fun onMarkerClick(marker: Marker): Boolean {
-        showCity(city = marker.tag as City, focusInWholeWorkingArea = true)
+        showCity(marker.city, true)
         return true
     }
 
     private fun clearCities() {
-        citiesMarkersAndAreas.forEach { (a, b) ->
-            a.remove()
-            b.forEach(Polygon::remove)
+        citiesMarkersAndAreas.forEach { (marker, polis) ->
+            marker.remove()
+            polis.forEach(Polygon::remove)
         }
     }
 
@@ -83,6 +108,8 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
             citiesMarkersAndAreas.add(marker to polygons)
         }
+
+        onCameraMove()
     }
 
     override fun showCity(city: City?, focusInWholeWorkingArea: Boolean) {
@@ -101,7 +128,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
                         )
                     )
                 }
-                
+
             } else {
                 fragment = NoCityDetailsFragment()
             }
@@ -117,6 +144,12 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
         presenter.onStop()
     }
+
+    private val Marker.city get() = tag as City
+
+    private fun Point.distanceTo(other: Point) =
+        Math.sqrt(Math.pow(x.toDouble() - other.x, 2.0) + Math.pow(y.toDouble() - other.y, 2.0))
+
 
     companion object {
 
