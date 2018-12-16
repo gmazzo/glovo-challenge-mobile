@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 apply from: '../shared.gradle'
 
+android {
+    defaultConfig {
+        buildConfigField 'boolean', 'MERGE_POLYGONS', "${true}"
+    }
+}
+
 dependencies {
     api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
@@ -10,4 +16,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation 'math.geom2d:javaGeom:0.11.1'
 }

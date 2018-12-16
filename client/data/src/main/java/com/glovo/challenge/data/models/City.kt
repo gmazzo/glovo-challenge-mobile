@@ -16,8 +16,8 @@ data class City(
 ) : Parcelable {
 
     @IgnoredOnParcel
-    val workingBounds = workingArea.flatten().let {
-        it.drop(1).fold(LatLngBounds(it[0], it[0]), LatLngBounds::including)
-    }!!
+    val workingBounds = workingArea
+        .flatten()
+        .let { it.drop(1).fold(LatLngBounds(it[0], it[0]), LatLngBounds::including) }!!
 
 }
