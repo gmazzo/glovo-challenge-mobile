@@ -36,7 +36,9 @@ class ChooseCityPresenterTest : BaseTest() {
         val city5 = testCity.copy(name = "city5", country = country1)
         val city6 = testCity.copy(name = "city6", country = country1)
 
-        `when`(citiesRepository.listCities()).thenReturn(Single.just(listOf(city1, city2, city3, city4, city5, city6)))
+        `when`(citiesRepository.listCities()).thenReturn(
+            Single.just(listOf(city1, city2, city3, city4, city5, city6).reversed())
+        )
 
         presenter.onStart()
 

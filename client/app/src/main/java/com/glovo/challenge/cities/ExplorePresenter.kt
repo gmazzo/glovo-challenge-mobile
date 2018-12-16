@@ -1,10 +1,7 @@
 package com.glovo.challenge.cities
 
-import android.content.Context
 import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
-import com.glovo.challenge.R
 import com.glovo.challenge.data.cities.CitiesRepository
 import com.glovo.challenge.data.location.LocationService
 import com.glovo.challenge.data.models.City
@@ -21,21 +18,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+import javax.inject.Named
 
 internal class ExplorePresenter @Inject constructor(
     private val view: ExploreContract.View,
-    context: Context,
+    @ColorInt @Named("workingAreaFillColor") private val workingAreaFillColor: Int,
+    @ColorInt @Named("workingAreaBorderColor") private val workingAreaBorderColor: Int,
     citiesRepository: CitiesRepository,
     private val locationService: LocationService,
     private val initialData: InitialData?,
     private val markerIcon: Lazy<BitmapDescriptor>
 ) : ExploreContract.Presenter {
-
-    @ColorInt
-    private val workingAreaFillColor = ContextCompat.getColor(context, R.color.working_areas_fill)
-
-    @ColorInt
-    private val workingAreaBorderColor = ContextCompat.getColor(context, R.color.working_areas_border)
 
     private val getCities = Maybe.fromCallable { initialData?.cities }
         .switchIfEmpty(citiesRepository.listCities())
@@ -69,36 +62,36 @@ internal class ExplorePresenter @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .doAfterTerminate(view::onLoadReady)
             .doAfterTerminate(::focusOnInitialLocation)
-            .subscribe(view::showCities)
+            .subscribe(view::showCitiesGeo)
     }
 
     private fun focusOnInitialLocation() {
         if (focusOnInitialLocation) {
-            val initialLocation = initialData?.location
+            val target = initialData?.location?.let { LatLng(it.latitude, it.longitude) }
 
-            if (initialLocation != null) {
-                focusMapOnTarget(
-                    LatLng(initialLocation.latitude, initialLocation.longitude), true
-                )
-
-            } else {
+            focusMapOnTarget(target, true, ifNotFound = {
                 view.showCity(null, false)
                 view.showChooseCities()
-            }
+            })
         }
     }
 
     override fun onMapFocusTarget(target: LatLng) =
         focusMapOnTarget(target, false)
 
-    private fun focusMapOnTarget(target: LatLng, focusInWholeWorkingArea: Boolean) {
+    private fun focusMapOnTarget(target: LatLng?, focusInWholeWorkingArea: Boolean, ifNotFound: () -> Unit = {}) {
         tryFindCityDisposable.dispose()
 
-        tryFindCityDisposable = getCities
-            .flatMapObservable { Observable.fromIterable(it) }
-            .filter { city -> city.workingBounds.contains(target) }
-            .firstElement()
+        val findCity =
+            if (target != null) getCities
+                .flatMapObservable { Observable.fromIterable(it) }
+                .filter { city -> city.workingBounds.contains(target) }
+                .firstElement()
+            else Maybe.empty()
+
+        tryFindCityDisposable = findCity
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnComplete(ifNotFound)
             .subscribe { view.showCity(it, focusInWholeWorkingArea) }
     }
 

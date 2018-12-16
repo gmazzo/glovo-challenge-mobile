@@ -1,0 +1,72 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.2'
+}
+
+android {
+
+    buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
+    }
+
+    testOptions.unitTests.all {
+        jacoco {
+            includeNoLocationClasses = true
+        }
+    }
+}
+
+task jacocoTestReport { self ->
+    build.dependsOn self
+}
+
+// based on https://proandroiddev.com/unified-code-coverage-for-android-revisited-44789c9b722f and https://github.com/nomisRev/AndroidGradleJacoco
+android.testVariants.all {
+    def variant = it.testedVariant
+    def name = variant.name.capitalize()
+
+    tasks.create(name: "jacoco${name}TestReport", type: JacocoReport) { self ->
+        group = 'Reporting'
+        description = "Generates Jacoco coverage reports on the ${variant.name} variant"
+
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        sourceDirectories = files(variant.sourceSets.collectMany({ it.java.source }))
+        classDirectories = fileTree(dir: buildDir, includes: [
+                "intermediates/classes/${variant.name}/**",
+                "tmp/kotlin-classes/${variant.name}/**"
+        ], excludes: [
+                'android/**/*.*',
+                '**/R.class',
+                '**/R$*.class',
+                '**/BuildConfig.*',
+                '**/Manifest*.*',
+                '**/*Test*.*',
+                '**/*Module.*', // modules for Dagger.
+                '**/*Module$Companion.*', // modules for Dagger+Kotlin.
+                '**/*Dagger*.*', // Dagger auto-generated code.
+                '**/*MembersInjector*.*', // Dagger auto-generated code.
+                '**/*_Provide*Factory*.*',
+                '**/*_Factory.*', // Dagger auto-generated code
+        ])
+        executionData = fileTree(dir: buildDir, includes: [
+                "jacoco/test${name}UnitTest.exec",
+                'outputs/code-coverage/connected/*coverage.ec'
+        ])
+
+        doLast {
+            println "Wrote HTML coverage report to ${reports.html.destination}/index.html"
+            println "Wrote XML coverage report to ${reports.xml.destination}"
+        }
+
+        dependsOn "test${name}UnitTest", "create${name}CoverageReport"
+        jacocoTestReport.dependsOn self
+    }
+
+}

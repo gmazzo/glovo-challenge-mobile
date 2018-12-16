@@ -26,6 +26,7 @@ internal class ChooseCityPresenter @Inject constructor(
     }
 
     private fun sortAndAddCountries(cities: List<City>): List<ChooseCityContract.Item> = cities
+        .sortedBy { it.name }
         .groupByTo(
             destination = TreeMap { a, b -> a.name.compareTo(b.name) }, // sorts by country name
             keySelector = { it.country },

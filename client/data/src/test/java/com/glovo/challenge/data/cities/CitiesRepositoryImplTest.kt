@@ -41,9 +41,6 @@ class CitiesRepositoryImplTest : BaseTest() {
         val dtos = listOf(DTO_SCL, DTO_BUE, DTO_BCN)
         val expected = listOf(CITY_SCL, CITY_BUE, CITY_BCN)
 
-        val aaa = listOf(DTO_SCL, DTO_BUE, DTO_BCN).map { it.workingArea }
-        val bbb = aaa.map { geoService.decodePolygons(it) }
-
         `when`(api.list()).thenReturn(Single.just(dtos))
 
         val result = impl.listCities().blockingGet()

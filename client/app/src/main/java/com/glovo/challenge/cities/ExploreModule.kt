@@ -1,11 +1,14 @@
 package com.glovo.challenge.cities
 
+import android.content.Context
+import androidx.core.content.ContextCompat
+import com.glovo.challenge.R
 import com.glovo.challenge.models.InitialData
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
+import javax.inject.Named
 
 @Module
 internal abstract class ExploreModule {
@@ -21,7 +24,18 @@ internal abstract class ExploreModule {
         const val EXTRA_INITIAL_DATA = "initialData"
 
         @Provides
-        @Reusable
+        @JvmStatic
+        @Named("workingAreaFillColor")
+        fun provideWorkingAreaFillColor(context: Context) =
+            ContextCompat.getColor(context, R.color.working_areas_fill)
+
+        @Provides
+        @JvmStatic
+        @Named("workingAreaBorderColor")
+        fun provideWorkingAreaBorderColor(context: Context) =
+            ContextCompat.getColor(context, R.color.working_areas_border)
+
+        @Provides
         @JvmStatic
         fun provideMarkerIcon() =
             BitmapDescriptorFactory.defaultMarker()!!

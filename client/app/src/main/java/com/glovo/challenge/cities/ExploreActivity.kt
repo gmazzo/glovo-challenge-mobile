@@ -19,7 +19,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import dagger.android.support.DaggerAppCompatActivity
@@ -125,7 +124,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
         citiesGeo.clear()
     }
 
-    override fun showCities(citiesGeoData: List<Triple<City, MarkerOptions, List<PolygonOptions>>>) {
+    override fun showCitiesGeo(citiesGeoData: List<CityGeoData>) {
         clearCitiesGeo()
 
         citiesGeoData.forEach { (city, markerOpt, poliOpts) ->

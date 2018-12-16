@@ -1,7 +1,7 @@
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'jacoco-android'
+apply from: new File(buildscript.sourceFile.parentFile, 'jacoco.gradle')
 
 android {
     compileSdkVersion 28
@@ -32,10 +32,6 @@ android {
 
 androidExtensions {
     experimental = true
-}
-
-jacoco {
-    toolVersion = '0.8.2'
 }
 
 dependencies {
