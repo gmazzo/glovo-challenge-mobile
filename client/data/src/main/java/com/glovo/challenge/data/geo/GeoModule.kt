@@ -1,18 +1,14 @@
 package com.glovo.challenge.data.geo
 
-import dagger.Binds
+import com.glovo.challenge.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import math.geom2d.polygon.convhull.ConvexHull2D
-import math.geom2d.polygon.convhull.JarvisMarch2D
+import org.locationtech.jts.geom.GeometryFactory
+import javax.inject.Provider
 
 @Module
 internal abstract class GeoModule {
-
-    @Binds
-    @Reusable
-    abstract fun bindGeoService(impl: GeoServiceImpl): GeoService
 
     @Module
     companion object {
@@ -20,7 +16,13 @@ internal abstract class GeoModule {
         @Provides
         @Reusable
         @JvmStatic
-        fun provideConvexHull2D(): ConvexHull2D = JarvisMarch2D()
+        fun provideGeoService(base: Provider<GeoServiceImpl>, merger: Provider<GeoServiceMergerImpl>): GeoService =
+            (if (BuildConfig.MERGE_POLYGONS) merger else base).get()
+
+        @Provides
+        @Reusable
+        @JvmStatic
+        fun provideGeometryFactory() = GeometryFactory()
 
     }
 
