@@ -12,6 +12,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -34,7 +35,12 @@ internal class DataModule {
 
     @Provides
     @Reusable
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+    fun provideCache(context: Context) =
+        if (BuildConfig.USE_CACHE) Cache(context.cacheDir, 2 * 1024 * 1024) else null
+
+    @Provides
+    @Reusable
+    fun provideOkHttpClient(cache: Cache?): OkHttpClient = OkHttpClient.Builder()
         .apply {
             if (BuildConfig.DEBUG) {
                 addInterceptor(HttpLoggingInterceptor().apply {
@@ -42,6 +48,7 @@ internal class DataModule {
                 })
             }
         }
+        .cache(cache)
         .build()
 
     @Provides

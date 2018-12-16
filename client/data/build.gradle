@@ -3,6 +3,7 @@ apply from: '../shared.gradle'
 
 android {
     defaultConfig {
+        buildConfigField 'boolean', 'USE_CACHE', "${true}"
         buildConfigField 'boolean', 'MERGE_POLYGONS', "${true}"
     }
 }

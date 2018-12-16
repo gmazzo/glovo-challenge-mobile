@@ -1,27 +1,26 @@
 package com.glovo.challenge.data.cities
 
-import dagger.Binds
+import com.glovo.challenge.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import retrofit2.Retrofit
+import javax.inject.Provider
 
 @Module
-internal abstract class CitiesModule {
+internal class CitiesModule {
 
-    @Binds
+    @Provides
     @Reusable
-    abstract fun bindRepository(impl: CitiesRepositoryImpl): CitiesRepository
+    fun provideCitiesRepository(
+        base: Provider<CitiesRepositoryImpl>,
+        cache: Provider<CitiesRepositoryCacheImpl>
+    ): CitiesRepository =
+        (if (BuildConfig.USE_CACHE) cache else base).get()
 
-    @Module
-    companion object {
-
-        @Provides
-        @Reusable
-        @JvmStatic
-        fun provideAPI(retrofit: Retrofit): CitiesAPI =
-            retrofit.create(CitiesAPI::class.java)
-
-    }
+    @Provides
+    @Reusable
+    fun provideAPI(retrofit: Retrofit): CitiesAPI =
+        retrofit.create(CitiesAPI::class.java)
 
 }

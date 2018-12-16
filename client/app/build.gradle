@@ -13,13 +13,7 @@ android {
             initWith debug
             matchingFallbacks = 'debug'
 
-            buildConfigField 'String', 'API_ENDPOINT', '"http://192.168.0.15:3000/api/"'
-        }
-        emulator {
-            initWith debug
-            matchingFallbacks = 'debug'
-
-            buildConfigField 'String', 'API_ENDPOINT', '"http://10.0.2.2:3000/api/"'
+            buildConfigField 'String', 'API_ENDPOINT', "\"http://${InetAddress.localHost.canonicalHostName}:3000/api/\""
         }
     }
 }
