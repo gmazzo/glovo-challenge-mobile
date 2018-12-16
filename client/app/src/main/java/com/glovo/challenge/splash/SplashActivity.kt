@@ -6,6 +6,7 @@ import com.glovo.challenge.cities.ExploreActivity
 import com.glovo.challenge.models.InitialData
 import com.glovo.utils.hasLocationPermission
 import com.glovo.utils.requestLocationPermission
+import com.glovo.utils.snackbar
 import dagger.android.DaggerActivity
 import javax.inject.Inject
 
@@ -49,6 +50,11 @@ class SplashActivity : DaggerActivity(), SplashContract.View {
 
         startActivity(intent)
         finish()
+    }
+
+    override fun showError(exception: Throwable) {
+        exception.printStackTrace()
+        snackbar(exception.localizedMessage)
     }
 
     override fun onStop() {

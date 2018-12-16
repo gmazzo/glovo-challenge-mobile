@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import java.net.ConnectException
 
 class SplashPresenterTest : BaseTest() {
 
@@ -53,6 +54,18 @@ class SplashPresenterTest : BaseTest() {
         presenter.onStart()
 
         verify(view).onReady(InitialData(cities, location))
+    }
+
+    @Test
+    fun testOnStart_WithError() {
+        val error = ConnectException()
+
+        `when`(citiesRepository.listCities()).thenReturn(Single.error(error))
+        `when`(locationService.getCurrentLocation()).thenReturn(Maybe.empty())
+
+        presenter.onStart()
+
+        verify(view).showError(error)
     }
 
     @Test

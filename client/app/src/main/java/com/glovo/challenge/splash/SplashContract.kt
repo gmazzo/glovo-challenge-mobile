@@ -8,6 +8,8 @@ internal interface SplashContract {
 
         fun onReady(initialData: InitialData)
 
+        fun showError(exception: Throwable)
+
     }
 
     interface Presenter {

@@ -29,7 +29,7 @@ internal class SplashPresenter @Inject constructor(
             )
             .map { if (it.location is MissingLocation) it.copy(location = null) else it }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(view::onReady)
+            .subscribe(view::onReady, view::showError)
     }
 
     override fun onStop() {
