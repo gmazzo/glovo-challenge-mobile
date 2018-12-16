@@ -11,6 +11,6 @@
     <color name="working_areas_border">#176951</color>
     <color name="working_areas_fill">#4027b38c</color>
 
-    <color name="ic_launcher_background">@color/glovo_green</color>
+    <color name="ic_launcher_background">@color/glovo_yellow</color>
 
 </resources>
