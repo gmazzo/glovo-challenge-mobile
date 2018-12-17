@@ -21,9 +21,9 @@ class Application : DaggerApplication() {
         super.onCreate()
 
         RxJavaPlugins.setErrorHandler {
-            Log.e("Rx", it.localizedMessage, it)
-
             if (BuildConfig.DEBUG) {
+                Log.e("Rx", it.localizedMessage, it)
+
                 Toast.makeText(this, it.localizedMessage, Toast.LENGTH_LONG).show()
 
             } else {

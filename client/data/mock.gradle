@@ -1,0 +1,78 @@
+// A mock buildType which will preload all requests in the assets folder allowing to work offline
+// remember to run the server with './gradlew server:run' before building it
+
+import groovy.json.JsonSlurper
+
+def endpoint = "http://localhost:3000/api"
+def outputDir = file("$buildDir/generated/res/mockData")
+def assetsOutputDir = file("$outputDir/assets")
+
+android {
+    defaultConfig {
+        buildConfigField 'boolean', 'USE_MOCKS', "${false}"
+    }
+    buildTypes {
+        mock {
+            initWith debug
+
+            buildConfigField 'boolean', 'USE_MOCKS', "${true}"
+        }
+    }
+    sourceSets {
+        mock {
+            assets.srcDirs += assetsOutputDir
+        }
+    }
+}
+
+task generateMockDataResValues(dependsOn: ['downloadCountries', 'downloadCities', 'downloadCitiesDetails']) { self ->
+    android.libraryVariants.all { variant ->
+        if (variant.buildType.name == 'mock') {
+            tasks["generate${variant.name.capitalize()}Assets"].dependsOn self
+        }
+    }
+}
+
+task downloadCountries(type: DownloadFileTask) {
+    url = new URL("$endpoint/countries")
+    outFile = file("$assetsOutputDir/countries.json")
+}
+
+task downloadCities(type: DownloadFileTask) {
+    url = new URL("$endpoint/cities")
+    outFile = file("$assetsOutputDir/cities.json")
+}
+
+task downloadCitiesDetails(dependsOn: downloadCities) {
+    File cities = downloadCities.outFile
+
+    inputs.files cities
+    outputs.dir assetsOutputDir
+
+    doLast {
+        def list = new JsonSlurper().parseText(cities.text)
+        list.each {
+            def code = it.code
+            def url = new URL("$endpoint/cities/$code")
+            def outFile = file("$assetsOutputDir/cities-${code}.json")
+
+            outFile.newOutputStream() << url.openStream()
+        }
+    }
+}
+
+class DownloadFileTask extends DefaultTask {
+
+    @Input
+    URL url
+
+    @OutputFile
+    File outFile
+
+    @TaskAction
+    void perform() {
+        outFile.parentFile.mkdirs()
+        outFile.newOutputStream() << url.openStream()
+    }
+
+}

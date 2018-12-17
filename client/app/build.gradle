@@ -9,6 +9,10 @@ android {
     }
 
     buildTypes {
+        mock {
+            initWith debug
+            matchingFallbacks = 'debug'
+        }
         device {
             initWith debug
             matchingFallbacks = 'debug'

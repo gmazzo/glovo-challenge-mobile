@@ -8,6 +8,7 @@ import com.glovo.challenge.data.cities.CitiesModule
 import com.glovo.challenge.data.countries.CountriesModule
 import com.glovo.challenge.data.geo.GeoModule
 import com.glovo.challenge.data.location.LocationModule
+import com.glovo.challenge.data.mock.MockDataInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Binds
@@ -51,6 +52,9 @@ internal class DataModule {
                 addInterceptor(HttpLoggingInterceptor().also {
                     it.level = HttpLoggingInterceptor.Level.BASIC
                 })
+            }
+            if (BuildConfig.USE_MOCKS) {
+                addInterceptor(MockDataInterceptor(context))
             }
         }
         .cache(cache)

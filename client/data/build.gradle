@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: '../shared.gradle'
+apply from: 'mock.gradle'
 
 android {
     defaultConfig {
@@ -12,6 +13,7 @@ dependencies {
     api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    implementation 'com.github.gmazzo:okhttp-mock:1.2.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation "com.google.android.gms:play-services-maps:$gmsVersion"
     implementation "com.google.android.gms:play-services-location:$gmsVersion"
