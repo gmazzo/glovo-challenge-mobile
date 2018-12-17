@@ -28,7 +28,7 @@ class Application : DaggerApplication() {
 
             } else {
                 // let it crash and generate a report
-                throw it;
+                throw it
             }
         }
     }
