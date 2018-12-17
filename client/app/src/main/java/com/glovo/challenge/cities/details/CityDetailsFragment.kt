@@ -10,6 +10,7 @@ import com.glovo.challenge.cities.details.CityDetailsModule.Companion.EXTRA_CITY
 import com.glovo.challenge.data.models.City
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_city_details.*
+import kotlinx.android.synthetic.main.fragment_city_details_content.*
 import javax.inject.Inject
 
 class CityDetailsFragment : DaggerFragment(), CityDetailsContract.View {
