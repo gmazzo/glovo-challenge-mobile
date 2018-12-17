@@ -23,6 +23,8 @@ task jacocoTestReport { self ->
     build.dependsOn self
 }
 
+def includeInstrumentationTests = false
+
 // based on https://proandroiddev.com/unified-code-coverage-for-android-revisited-44789c9b722f and https://github.com/nomisRev/AndroidGradleJacoco
 android.testVariants.all {
     def variant = it.testedVariant
@@ -65,7 +67,10 @@ android.testVariants.all {
             println "Wrote XML coverage report to ${reports.xml.destination}"
         }
 
-        dependsOn "test${name}UnitTest", "create${name}CoverageReport"
+        dependsOn "test${name}UnitTest"
+        if (includeInstrumentationTests) {
+            dependsOn "create${name}CoverageReport"
+        }
         jacocoTestReport.dependsOn self
     }
 
