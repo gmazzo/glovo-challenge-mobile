@@ -31,12 +31,12 @@ internal class GeoServiceMergerImpl @Inject constructor(
         val polygons = coords.map(::createPolygon)
         val unified = geometryFactory
             .buildGeometry(polygons)
-            .union()
+            .union() as Polygon
 
         if (!unified.isValid) {
             throw IllegalStateException("the polygon is not valid!")
         }
-        return unified.coordinates.map { LatLng(it.y, it.x) }
+        return unified.exteriorRing.coordinates.map { LatLng(it.y, it.x) }
     }
 
     private fun createPolygon(coords: List<LatLng>): Polygon {
