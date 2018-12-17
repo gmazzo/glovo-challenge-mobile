@@ -52,6 +52,7 @@ class LocationServiceImplTest(
             arrayOf(PackageManager.PERMISSION_GRANTED, null, null),
             arrayOf(PackageManager.PERMISSION_GRANTED, TEST_LOCATION, TEST_LOCATION)
         )
+
     }
 
 }

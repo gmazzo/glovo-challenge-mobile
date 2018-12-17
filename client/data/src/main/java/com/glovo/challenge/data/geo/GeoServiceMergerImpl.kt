@@ -6,14 +6,15 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Polygon
 import javax.inject.Inject
+import javax.inject.Named
 
 internal class GeoServiceMergerImpl @Inject constructor(
-    private val baseImpl: GeoServiceImpl,
+    @Named("base") private val base: GeoService,
     private val geometryFactory: GeometryFactory
 ) : GeoService {
 
     override fun decodePolygons(polygons: List<String>): List<List<LatLng>> {
-        val base = baseImpl.decodePolygons(polygons)
+        val base = base.decodePolygons(polygons)
 
         if (base.size > 1) {
             try {

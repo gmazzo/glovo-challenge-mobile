@@ -59,21 +59,6 @@ class CitiesRepositoryImplTest : BaseTest() {
     }
 
     @Test
-    fun testGetDetails_WithBlanksWorkingAreas() {
-        testGetDetails(
-            DTO_BCN.code,
-            DTO_BCN.copy(
-                workingArea = DTO_BCN.workingArea.toMutableList().apply {
-                    add(0, "")
-                    add(2, "   ")
-                    add(size, "")
-                }
-            ),
-            CITY_BCN // blanks should be stripped out
-        )
-    }
-
-    @Test
     fun testGetDetails_Unknown() {
         testGetDetails("XX", null, null)
     }

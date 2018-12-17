@@ -4,8 +4,13 @@ import com.glovo.challenge.data.BaseTest
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-internal class GeoServiceImplTest : BaseTest() {
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class GeoServiceImplTest(
+    private val encodedPolygons: List<String>
+) : BaseTest() {
 
     private val impl by lazy { GeoServiceImpl() }
 
@@ -19,7 +24,7 @@ internal class GeoServiceImplTest : BaseTest() {
             )
         )
 
-        val actual = impl.decodePolygons("_p~iF~ps|U_ulLnnqC_mqNvxq`@")
+        val actual = impl.decodePolygons(encodedPolygons)
 
         assertEquals(expected.size, actual.size)
         expected.forEachIndexed { i, itI ->
@@ -33,6 +38,17 @@ internal class GeoServiceImplTest : BaseTest() {
                 assertEquals(expectedLatLng.longitude, actualLatLng.longitude, 0.0001)
             }
         }
+    }
+
+    companion object {
+
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+        fun data() = listOf(
+            arrayOf(listOf("_p~iF~ps|U_ulLnnqC_mqNvxq`@")),
+            arrayOf(listOf("", "_p~iF~ps|U_ulLnnqC_mqNvxq`@", "", ""))
+        )
+
     }
 
 }

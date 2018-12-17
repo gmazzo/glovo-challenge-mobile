@@ -18,16 +18,21 @@ internal class LocationServiceImpl @Inject constructor(
 
     @SuppressLint("MissingPermission")
     override fun getCurrentLocation() = Maybe.fromCallable<Location> {
-        if (context.hasLocationPermission)
-            try {
-                Tasks.await(client.lastLocation, 3, TimeUnit.SECONDS)
+        if (context.hasLocationPermission) {
+            val task = client.lastLocation
 
-            } catch (e: InterruptedException) {
-                null
+            if (task.isComplete) {
+                return@fromCallable task.result
+
+            } else {
+                try {
+                    return@fromCallable Tasks.await(client.lastLocation, 3, TimeUnit.SECONDS)
+
+                } catch (e: InterruptedException) {
+                }
             }
-        else
-            null
-
+        }
+        return@fromCallable null
     }
         .onErrorComplete()
         .subscribeOn(Schedulers.io())!!
