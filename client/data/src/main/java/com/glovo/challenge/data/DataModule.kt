@@ -2,6 +2,8 @@ package com.glovo.challenge.data
 
 import android.app.Application
 import android.content.Context
+import com.facebook.stetho.Stetho
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.glovo.challenge.data.cities.CitiesModule
 import com.glovo.challenge.data.countries.CountriesModule
 import com.glovo.challenge.data.geo.GeoModule
@@ -36,15 +38,18 @@ internal class DataModule {
     @Provides
     @Reusable
     fun provideCache(context: Context) =
-        if (BuildConfig.USE_CACHE) Cache(context.cacheDir, 2 * 1024 * 1024) else null
+        if (BuildConfig.USE_CACHE) Cache(context.cacheDir, 10 * 1024 * 1024) else null
 
     @Provides
     @Reusable
-    fun provideOkHttpClient(cache: Cache?): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttpClient(context: Context, cache: Cache?): OkHttpClient = OkHttpClient.Builder()
         .apply {
             if (BuildConfig.DEBUG) {
-                addInterceptor(HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
+                Stetho.initializeWithDefaults(context)
+
+                addNetworkInterceptor(StethoInterceptor())
+                addInterceptor(HttpLoggingInterceptor().also {
+                    it.level = HttpLoggingInterceptor.Level.BODY
                 })
             }
         }
