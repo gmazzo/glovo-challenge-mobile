@@ -97,7 +97,7 @@ class ExploreActivity : DaggerAppCompatActivity(), ExploreContract.View {
 
     private fun onCameraMove() {
         // checks if we need to show or hide the markers
-        showMarkers = googleMap.cameraPosition.zoom < 8
+        showMarkers = googleMap.cameraPosition.zoom < 10 // City
     }
 
     private fun onCameraIdle() {
