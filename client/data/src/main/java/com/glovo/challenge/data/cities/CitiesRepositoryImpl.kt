@@ -20,7 +20,6 @@ internal class CitiesRepositoryImpl @Inject constructor(
                 country.code to country
             }.toMap()
         }
-        .cache()
 
     override fun listCities() = api
         .list()

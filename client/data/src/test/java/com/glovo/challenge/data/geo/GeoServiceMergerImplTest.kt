@@ -1,6 +1,7 @@
 package com.glovo.challenge.data.geo
 
 import com.glovo.challenge.data.BaseTest
+import com.glovo.challenge.data.models.WorkingArea
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -16,7 +17,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class GeoServiceMergerImplTest(
-    private val polygons: List<List<LatLng>>
+    private val polygons: WorkingArea
 ) : BaseTest() {
 
     @Mock

@@ -22,11 +22,21 @@ internal abstract class GeoModule {
         @Provides
         @Reusable
         @JvmStatic
-        fun provideGeoService(
+        @Named("impl")
+        fun provideGeoServiceImpl(
             @Named("base") base: Provider<GeoService>,
             merger: Provider<GeoServiceMergerImpl>
         ): GeoService =
             (if (BuildConfig.MERGE_POLYGONS) merger else base).get()
+
+        @Provides
+        @Reusable
+        @JvmStatic
+        fun provideGeoService(
+            @Named("impl") impl: Provider<GeoService>,
+            cache: Provider<GeoServiceCacheImpl>
+        ): GeoService =
+            (if (BuildConfig.USE_CACHE) cache else impl).get()
 
         @Provides
         @Reusable

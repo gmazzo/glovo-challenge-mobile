@@ -1,6 +1,7 @@
 package com.glovo.challenge.data.geo
 
 import android.util.Log
+import com.glovo.challenge.data.models.WorkingArea
 import com.google.android.gms.maps.model.LatLng
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
@@ -13,7 +14,7 @@ internal class GeoServiceMergerImpl @Inject constructor(
     private val geometryFactory: GeometryFactory
 ) : GeoService {
 
-    override fun decodePolygons(polygons: List<String>): List<List<LatLng>> {
+    override fun decodePolygons(polygons: List<String>): WorkingArea {
         val base = base.decodePolygons(polygons)
 
         if (base.size > 1) {
@@ -28,7 +29,7 @@ internal class GeoServiceMergerImpl @Inject constructor(
         return base
     }
 
-    private fun mergePolygons(coords: List<List<LatLng>>): List<LatLng> {
+    private fun mergePolygons(coords: WorkingArea): List<LatLng> {
         val polygons = coords.map(::createPolygon)
         val unified = geometryFactory
             .buildGeometry(polygons)

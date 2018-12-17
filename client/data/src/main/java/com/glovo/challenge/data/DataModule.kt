@@ -49,7 +49,7 @@ internal class DataModule {
 
                 addNetworkInterceptor(StethoInterceptor())
                 addInterceptor(HttpLoggingInterceptor().also {
-                    it.level = HttpLoggingInterceptor.Level.BODY
+                    it.level = HttpLoggingInterceptor.Level.BASIC
                 })
             }
         }

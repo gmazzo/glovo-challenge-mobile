@@ -33,7 +33,6 @@ internal class ExplorePresenter @Inject constructor(
     private val getCities = Maybe.fromCallable { initialData?.cities }
         .switchIfEmpty(citiesRepository.listCities())
         .subscribeOn(Schedulers.computation())
-        .cache()
 
     @VisibleForTesting
     internal var loadWorkAreasDisposable = Disposables.disposed()

@@ -1,9 +1,9 @@
 package com.glovo.challenge.data.geo
 
-import com.google.android.gms.maps.model.LatLng
+import com.glovo.challenge.data.models.WorkingArea
 
 interface GeoService {
 
-    fun decodePolygons(polygons: List<String>): List<List<LatLng>>
+    fun decodePolygons(polygons: List<String>): WorkingArea
 
 }
