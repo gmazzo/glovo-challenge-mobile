@@ -3,7 +3,7 @@ apply from: '../shared.gradle'
 
 android {
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 21
 
         buildConfigField 'String', 'API_ENDPOINT', '"http://api.glovo.com/"'
     }

@@ -23,7 +23,7 @@ internal class GeoServiceMergerImpl @Inject constructor(
 
             } catch (e: Exception) {
                 // best effort, if we face an issue, just return the original one
-                Log.e("GeoServiceImpl", "decodePolygons failed: ${e.localizedMessage}")
+                Log.e("GeoServiceMergerImpl", "decodePolygons failed: ${e.localizedMessage}")
             }
         }
         return base
@@ -33,12 +33,14 @@ internal class GeoServiceMergerImpl @Inject constructor(
         val polygons = coords.map(::createPolygon)
         val unified = geometryFactory
             .buildGeometry(polygons)
-            .union() as Polygon
+            .union()
 
         if (!unified.isValid) {
             throw IllegalStateException("the polygon is not valid!")
         }
-        return unified.exteriorRing.coordinates.map { LatLng(it.y, it.x) }
+
+        val geo = if (unified is Polygon) unified.exteriorRing else unified
+        return geo.coordinates.map { LatLng(it.y, it.x) }
     }
 
     private fun createPolygon(coords: List<LatLng>): Polygon {
