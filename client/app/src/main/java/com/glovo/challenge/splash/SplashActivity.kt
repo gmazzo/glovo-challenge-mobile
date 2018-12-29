@@ -13,7 +13,7 @@ import javax.inject.Inject
 class SplashActivity : DaggerActivity(), SplashContract.View {
 
     @Inject
-    internal lateinit var presenter: SplashPresenter
+    internal lateinit var presenter: SplashContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
